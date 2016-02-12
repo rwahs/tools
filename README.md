@@ -60,14 +60,17 @@ Following the deployment, any required initialisation tasks are performed.  Spec
 component is deployed, any pending database migrations are applied.  Additionally, caches are cleaned and services are
 restarted as appropriate.
 
-### Clean
+### Nuke
 
 Remove all data from the database, restoring it to a clean state following a fresh installation of the current profile
 (i.e. the profile most recently deployed to the given environment).
 
-Syntax for the `clean` task:
+Syntax for the `nuke` task:
 
-    rwahs clean -e <env> -c <component>
+    rwahs nuke -e <env>
+
+This task does not accept a `-c` parameter, because it implicitly relates to clearing the database in the given 
+environment.
 
 This task does not accept any additional parameters.
 
@@ -78,8 +81,8 @@ and inserting the data into the environment's database.
 
 Syntax for the `import` task:
 
-    rwahs migrate -e <env> [-n]
+    rwahs import -e <env> [-n]
 
 This task does not accept a `-c` parameter, because it implicitly relates to running the import scripts.
 
-If the `-n` parameter is specified, it is the equivalent of running the `clean` task followed by the `migrate` task.
+If the `-n` parameter is specified, it is the equivalent of running the `nuke` task followed by the `import` task.
