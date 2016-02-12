@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#
+# config/rwahs/env/staging - Staging environment configuration for integration script.
+#
+
+set -e
+set -u
+
+target='staging'

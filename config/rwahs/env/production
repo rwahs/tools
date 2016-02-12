@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#
+# config/rwahs/env/production - Production environment configuration for integration script.
+#
+
+set -e
+set -u
+
+target='production'

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#
+# config/rwahs/components/profile - Profile component configuration for integration script.
+#
+
+set -e
+set -u
+
+component='profile'

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+# rwahs/tasks/build - Function definitions for "build" task.
+#
+
+set -e
+set -u
+
+function build_showHelp {
+    echo "TASK DESCRIPTION:"
+    echo "    Create a new release, which is a tag in the code repository."
+    echo
+}
+
+function build_runTask {
+    echo "Running 'build' task..."
+}
