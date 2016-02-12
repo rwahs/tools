@@ -8,16 +8,12 @@ The `rwahs` command handles all steps of integration and deployment via various 
 
 The general syntax is:
 
-    rwahs <task> --env <environment> --component <component>...
-
-Using the shorthand form for parameters:
-
     rwahs <task> -e <environment> -c <component>...
 
 ## Standard Options
 
-* The `--env`/`-e` and `--component`/`-c` parameters apply to most of the tasks.
-* The `--component`/`-c` parameter can be repeated to process multiple components sequentially (in the order specified).
+* The `-e` and `-c` parameters apply to most of the tasks.
+* The `-c` parameter can be repeated to process multiple components sequentially (in the order specified).
 
 ## Environments
 
@@ -43,17 +39,13 @@ Create a new release, which is a tag in the code repository.
 
 Syntax for the `build` task:
 
-    rwahs build --component <component> [--release <release>]
-
-Using shorthand form for parameters:
-
     rwahs build -c <component> [-r <release>]
 
-The optional `--release`/`-r` parameter specifies the name of the release, which must be unique for the given 
-component.  If the name already exists, an error is emitted.  If the `--release`/`-r` option is omitted, the release 
-name is generated based on the current timestamp.
+The optional `-r` parameter specifies the name of the release, which must be unique for the given component.  If the 
+name already exists, an error is emitted.  If the `-r` option is omitted, the release name is generated based on the 
+current timestamp.
 
-Note this task does not understand the `--env`/`-e` option, because releases exist independently of environments.
+Note this task does not understand the `-e` option, because releases exist independently of environments.
 
 ### Deploy
 
@@ -61,10 +53,6 @@ Transfer the specified release to the specified environment and update the envir
 the "current" version used in the given environment.
 
 Syntax for the `deploy` task:
-
-    rwahs deploy --env <env> --component <component> --release <release>
-
-Using the shorthand form for parameters:
 
     rwahs deploy -e <env> -c <component> -r <release>
 
@@ -79,10 +67,6 @@ Remove all data from the database, restoring it to a clean state following a fre
 
 Syntax for the `clean` task:
 
-    rwahs clean --env <env> --component <component>
-
-Using the shorthand form for parameters:
-
     rwahs clean -e <env> -c <component>
 
 This task does not accept any additional parameters.
@@ -94,13 +78,8 @@ and inserting the data into the environment's database.
 
 Syntax for the `import` task:
 
-    rwahs migrate --env <env> [--clean]
+    rwahs migrate -e <env> [-n]
 
-Using the shorthand form for parameters:
+This task does not accept a `-c` parameter, because it implicitly relates to running the import scripts.
 
-    rwahs migrate -e <env> [-C]
-
-This task does not accept a `--component`/`-c` parameter, because it implicitly relates to running the import scripts.
-
-If the `--clean`/`-C` parameter is specified, it is the equivalent of running the `clean` task followed by the 
-`migrate` task.
+If the `-n` parameter is specified, it is the equivalent of running the `clean` task followed by the `migrate` task.
