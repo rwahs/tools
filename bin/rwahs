@@ -1,49 +1,95 @@
 #!/usr/bin/env bash
 #
-# rwahs: Royal WA Historical Society - integration and deployment script.  See README.md or run `rwahs help` for usage.
+# rwahs: Royal WA Historical Society - integration and deployment script.
+# See README.md or run `rwahs help` for usage.
 #
 
 set -e
 set -u
 
-# Define program and tasks
-toolsDir=$(dirname $(dirname ${0}))
-programName=$(basename ${0})
-IFS=$'\n' tasks=($(ls -1 "${toolsDir}/include/rwahs/tasks"))
-IFS=$'\n' environments=($(ls -1 "${toolsDir}/config/rwahs/env"))
-IFS=$'\n' components=($(ls -1 "${toolsDir}/config/rwahs/components"))
+# Show general usage instructions
+function showHelp {
+    local programName toolsDir
 
-# Import task functions
-for task in ${tasks[@]}; do
-    source "${toolsDir}/include/${programName}/tasks/${task}"
-done
+    # Function arguments
+    programName="${1}"
+    toolsDir="${2}"
+    shift 2
 
-# Import utilities
-source "${toolsDir}/include/${programName}/utils"
-source "${toolsDir}/include/${programName}/help"
+    # Display general (command-level) help text
+    echo
+    echo "Royal WA Historical Society - integration and deployment script"
+    echo
+    echo "USAGE:"
+    echo "    ${programName} <task> [-e <environment>] [-c <component>]"
+    echo
+    echo "WHERE:"
+    echo "    <task> is the name of a task to perform: help, $(ls -m "${toolsDir}/include/rwahs/tasks")"
+    echo "    -e <environment> gives the name of the environment to control remotely: $(ls -m "${toolsDir}/config/rwahs/env")"
+    echo "    -c <component> gives the name of the component to process: $(ls -m "${toolsDir}/config/rwahs/components")"
+    echo
+    echo "NOTES:"
+    echo "    1. If the -e option is omitted, the script will run locally"
+    echo "    2. Not all tasks require or use the -e or -c options, however they are required for other tasks"
+    echo "    3. Some tasks have additional options"
+    echo
+    echo "For more information on specific tasks, run ${programName} help <task>"
+    echo
+}
 
-# Determine task to run
-if [ $# -eq 0 ]; then
+# Show task-specific usage instructions
+function showTaskHelp {
+    local programName toolsDir helpTask
+
+    # Function arguments
+    programName="${1}"
+    toolsDir="${2}"
+    helpTask="${3}"
+    shift 3
+
+    # Display task-specific help text
+    if [ ! -f "${toolsDir}/include/${programName}/tasks/${helpTask}" ]; then
+        echo "Requested help for unknown task '${helpTask}'; valid tasks are: $(ls -m "${toolsDir}/include/rwahs/tasks")"
+    else
+        source "${toolsDir}/include/${programName}/tasks/${helpTask}"
+        ${helpTask}_showHelp "${programName}" "${toolsDir}"
+    fi
+}
+
+# Main sequence
+function rwahsMain {
+    local toolsDir programName task
+
+    # Default values
+    toolsDir=$(readlink -f $(dirname $(dirname ${0})))
+    programName=$(basename ${0})
     task='help'
-else
-    task="${1}"
-    shift
-fi
 
-# Process task
-if [ "${task}" == "help" ]; then
-    # Show requested help
-    if [ "$#" -eq 0 ]; then
-        showHelp >&2
-    else
-        showTaskHelp "${1}" >&2
+    # Read task, if not specified then assume "help"
+    if [ $# -gt 0 ]; then
+        task="${1}"
+        shift
     fi
-else
-    # Execute requested task
-    if ! inArray tasks "${task}"; then
-        echo "Unknown task '${task}' specified, valid tasks are: ${tasks[@]}" >&2
-        exit 1
+
+    # Process task
+    if [ "${task}" == "help" ]; then
+        # Show requested help
+        if [ "$#" -eq 0 ]; then
+            showHelp "${programName}" "${toolsDir}" >&2
+        else
+            showTaskHelp "${programName}" "${toolsDir}" "${1}" >&2
+        fi
     else
-        ${task}_runTask
+        # Execute requested task
+        if [ ! -f "${toolsDir}/include/${programName}/tasks/${task}" ]; then
+            echo "Unknown task '${task}' specified, valid tasks are: $(ls -m "${toolsDir}/include/${programName}/tasks")" >&2
+            exit 1
+        else
+            source "${toolsDir}/include/${programName}/tasks/${task}"
+            ${task}_runTask "${programName}" "${toolsDir}" $@
+        fi
     fi
-fi
+}
+
+# Bootstrap
+rwahsMain $@

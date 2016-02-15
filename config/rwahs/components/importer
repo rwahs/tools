@@ -6,4 +6,6 @@
 set -e
 set -u
 
-component='importer'
+repo='rwahs/import-scripts'
+repoDefaultTargetCommitish='master'
+targetParent='local/import-scripts'

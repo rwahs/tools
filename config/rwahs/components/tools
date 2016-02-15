@@ -6,4 +6,6 @@
 set -e
 set -u
 
-component='tools'
+repo='rwahs/tools'
+repoDefaultTargetCommitish='master'
+targetParent='local/tools'
