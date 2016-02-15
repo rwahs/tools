@@ -22,21 +22,85 @@ function deploy_showHelp {
     echo "    ${programName} deploy -e <environment> -c <component> [-r <release>]"
     echo
     echo "WHERE:"
-    echo "    -e <environment> gives the name of the environment to deploy into."
-    echo "         Valid values: $(ls -m "${toolsDir}/config/${programName}/env")"
     echo "    -c <component> gives the name of the component to process."
     echo "         Valid values: $(ls -m "${toolsDir}/config/${programName}/components")"
+    echo "    -e <environment> gives the name of the environment to deploy into."
+    echo "         Valid values: $(ls -m "${toolsDir}/config/${programName}/env")"
     echo "    -r <release> gives the release tag to deploy (required for \`deploy\` task)"
     echo
 }
 
 function deploy_runTask {
-    local programName toolsDir
+    local programName toolsDir component environment releaseName targetPath targetSymlinkPath error
+    local repo repoDefaultTargetCommitish targetParent
+    local host user targetRoot
 
     # Function arguments
     programName="${1}"
     toolsDir="${2}"
     shift 2
 
+    # Parse parameters
+    while getopts c:e:r: parameter; do
+        case "$parameter" in
+            c)
+                component="${OPTARG}"
+            ;;
+            e)
+                environment="${OPTARG}"
+            ;;
+            r)
+                releaseName="${OPTARG}"
+            ;;
+            *)
+                deploy_showHelp "${programName}" "${toolsDir}" >&2
+                exit 1
+            ;;
+        esac
+    done
+
+    # Check for errors and required executables
+    if [ ! -v component ]; then
+        error="Required parameter 'component' not specified for 'deploy' task."
+    elif [ ! -f "${toolsDir}/config/${programName}/components/${component}" ]; then
+        error="Specified component '${component}' does not exist, see below for valid values."
+    elif [ ! -v environment ]; then
+        error="Required parameter 'environment' not specified for 'deploy' task."
+    elif [ ! -f "${toolsDir}/config/${programName}/env/${environment}" ]; then
+        error="Specified environment '${environment}' does not exist, see below for valid values."
+    elif [ ! -v releaseName ]; then
+        error="Required parameter 'release' not specified for 'deploy' task."
+    elif [ ! $(command -v "ssh") ]; then
+        error="The 'ssh' executable was not found and is required for the 'deploy' task; try 'apt-get install ssh'."
+    elif [ ! $(command -v "curl") ]; then
+        error="The 'curl' executable was not found and is required for the 'deploy' task; try 'apt-get install curl'."
+    elif [ ! $(command -v "tar") ]; then
+        error="The 'tar' executable was not found and is required for the 'deploy' task; try 'apt-get install tar'."
+    fi
+
+    # Display error and usage if any error occurred
+    if [ -v error ]; then
+        echo "${error}" >&2
+        deploy_showHelp "${programName}" "${toolsDir}" >&2
+        exit 1
+    fi
+
+    # Import the component settings and environment settings
+    source "${toolsDir}/config/${programName}/components/${component}"
+    source "${toolsDir}/config/${programName}/env/${environment}"
+
+    # Do the work
     echo "Running 'deploy' task..."
+    releaseUrl="https://github.com/${repo}/archive/release_${releaseName}.tar.gz"
+    targetPath="${targetRoot}/${targetParent}/${releaseName}"
+    targetSymlinkPath="${targetRoot}/${targetParent}/current"
+    mkdir --parents "${targetPath}"
+    curl --location "${releaseUrl}" | tar --extract --gunzip --strip-components=1 --directory="${targetPath}"
+    rm --force "${targetSymlinkPath}"
+    ln --symbolic "${targetPath}" "${targetSymlinkPath}"
+
+    # Run postDeploy hook, if defined
+    if [ $(type -t postDeploy) == "function" ]; then
+        postDeploy "${programName}" "${toolsDir}"
+    fi
 }

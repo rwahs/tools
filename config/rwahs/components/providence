@@ -9,3 +9,9 @@ set -u
 repo='rwahs/providence'
 repoDefaultTargetCommitish='master-fix'
 targetParent='web/providence'
+
+function postDeploy {
+    local toolsDir
+    toolsDir="${2}"
+    sudo "${toolsDir}/bin/restartServices"
+}
