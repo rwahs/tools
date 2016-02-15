@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
-# config/rwahs/components/config - Configuration component configuration for integration script.
+# config/rwahs/components/configuration - Configuration component configuration for integration script.
 #
 
 set -e
 set -u
 
-component='config'
+component='configuration'
