@@ -10,10 +10,7 @@ The general syntax is:
 
     rwahs <task> -e <environment> -c <component>
 
-## Standard Options
-
-* The `-e` and `-c` parameters apply to most of the tasks.
-* The `-c` parameter can be repeated to process multiple components sequentially (in the order specified).
+See below for further details, including a table summarising the options for each task.
 
 ## Environments
 
