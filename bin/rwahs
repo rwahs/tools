@@ -24,9 +24,9 @@ function showHelp {
     echo "    ${programName} <task> [-e <environment>] [-c <component>]"
     echo
     echo "WHERE:"
-    echo "    <task> is the name of a task to perform: help, $(ls -m "${toolsDir}/include/rwahs/tasks")"
-    echo "    -e <environment> gives the name of the environment to control remotely: $(ls -m "${toolsDir}/config/rwahs/env")"
-    echo "    -c <component> gives the name of the component to process: $(ls -m "${toolsDir}/config/rwahs/components")"
+    echo "    <task> is the name of a task to perform: help, $(ls -m "${toolsDir}/include/${programName}/tasks")"
+    echo "    -e <environment> gives the name of the environment to control remotely: $(ls -m "${toolsDir}/config/${programName}/env")"
+    echo "    -c <component> gives the name of the component to process: $(ls -m "${toolsDir}/config/${programName}/components")"
     echo
     echo "NOTES:"
     echo "    1. If the -e option is omitted, the script will run locally"
@@ -49,7 +49,7 @@ function showTaskHelp {
 
     # Display task-specific help text
     if [ ! -f "${toolsDir}/include/${programName}/tasks/${helpTask}" ]; then
-        echo "Requested help for unknown task '${helpTask}'; valid tasks are: $(ls -m "${toolsDir}/include/rwahs/tasks")"
+        echo "Requested help for unknown task '${helpTask}'; valid tasks are: $(ls -m "${toolsDir}/include/${programName}/tasks")"
     else
         source "${toolsDir}/include/${programName}/tasks/${helpTask}"
         ${helpTask}_showHelp "${programName}" "${toolsDir}"
