@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#
+# rwahs/tasks/migrate - Function definitions for "migrate" task.
+#
+
+set -e
+set -u
+
+function migrate_showHelp {
+    echo "TASK DESCRIPTION:"
+    echo "    Run the import scripts, converting data from the legacy database format into the format required"
+    echo "    by CollectiveAccess, and inserting the data into the environment's database."
+    echo
+}
+
+function migrate_runTask {
+    echo "Running 'migrate' task..."
+}

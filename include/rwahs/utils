@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#
+# rwahs/utils - Utility functions for integration script
+#
+
+set -e
+set -u
+
+# Check if value is a valid task name
+# @param The name of an array variable (not the array value itself, but the variable name)
+# @param The value to check
+# @returns 0 if the value is in the array, otherwise 1
+function inArray {
+    local arrayName="${1}"
+    local taskToCheck="${2}"
+    if [[ "$(declare -p ${arrayName})" =~ '['([0-9]+)']="'${taskToCheck}'"' ]]; then
+        return 0
+    else
+        return 1
+    fi
+}

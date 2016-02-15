@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+#
+# rwahs: Royal WA Historical Society - integration and deployment script.  See README.md or run `rwahs help` for usage.
+#
+
+set -e
+set -u
+
+# Define program and tasks
+toolsDir=$(dirname $(dirname ${0}))
+programName=$(basename ${0})
+IFS=$'\n' tasks=($(ls -1 "${toolsDir}/include/rwahs/tasks"))
+IFS=$'\n' environments=($(ls -1 "${toolsDir}/config/rwahs/env"))
+IFS=$'\n' components=($(ls -1 "${toolsDir}/config/rwahs/components"))
+
+# Import task functions
+for task in ${tasks[@]}; do
+    source "${toolsDir}/include/${programName}/tasks/${task}"
+done
+
+# Import utilities
+source "${toolsDir}/include/${programName}/utils"
+source "${toolsDir}/include/${programName}/help"
+
+# Determine task to run
+if [ $# -eq 0 ]; then
+    task='help'
+else
+    task="${1}"
+    shift
+fi
+
+# Process task
+if [ "${task}" == "help" ]; then
+    # Show requested help
+    if [ "$#" -eq 0 ]; then
+        showHelp >&2
+    else
+        showTaskHelp "${1}" >&2
+    fi
+else
+    # Execute requested task
+    if ! inArray tasks "${task}"; then
+        echo "Unknown task '${task}' specified, valid tasks are: ${tasks[@]}" >&2
+        exit 1
+    else
+        ${task}_runTask
+    fi
+fi

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#
+# rwahs/tasks/nuke - Function definitions for "nuke" task.
+#
+
+set -e
+set -u
+
+function nuke_showHelp {
+    echo "TASK DESCRIPTION:"
+    echo "    Remove all data from the database, restoring it to a clean state following a fresh installation of the "
+    echo "    current profile (i.e. the profile most recently deployed to the given environment)."
+    echo
+}
+
+function nuke_runTask {
+    echo "Running 'nuke' task..."
+}

@@ -28,7 +28,7 @@ The following environments are defined:
 * `tools` is this tools repository, i.e. a self-update: https://github.com/rwahs/tools
 * `providence` is the CollectiveAccess management application: https://github.com/rwahs/providence
 * `profile` is the CollectiveAccess installation profile (meta-schema): https://github.com/rwahs/installation-profile
-* `config` is the CollectiveAccess local configuration: https://github.com/rwahs/providence-configuration
+* `configuration` is the CollectiveAccess local configuration: https://github.com/rwahs/providence-configuration
 * `importer` is the collection of import scripts and queries: https://github.com/rwahs/import-scripts
 
 ## Tasks
