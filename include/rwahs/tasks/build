@@ -86,7 +86,7 @@ function build_runTask {
     source "${toolsDir}/config/${programName}/components/${component}"
 
     # Ensure we have a release name, default to the date/time stamp if none specified
-    if [ ! -v releaseName} ]; then
+    if [ ! -v releaseName ]; then
         releaseName=$(date +%Y%m%d_%H%M%S --date="${releaseDate}")
     fi
 
