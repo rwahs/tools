@@ -70,8 +70,6 @@ function deploy_runTask {
         error="Specified environment '${environment}' does not exist, see below for valid values."
     elif [ ! -v releaseName ]; then
         error="Required parameter 'release' not specified for 'deploy' task."
-    elif [ ! $(command -v "ssh") ]; then
-        error="The 'ssh' executable was not found and is required for the 'deploy' task; try 'apt-get install ssh'."
     elif [ ! $(command -v "curl") ]; then
         error="The 'curl' executable was not found and is required for the 'deploy' task; try 'apt-get install curl'."
     elif [ ! $(command -v "tar") ]; then
