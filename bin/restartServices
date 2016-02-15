@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#
+# restartServices
+# Simple wrapper to restart Apache and PHP FPM services; this can be specified in sudoers file as specifically allowed.
+#
+
+set -e
+set -u
+
+service apache2 restart
+service php5-fpm restart
