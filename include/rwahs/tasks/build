@@ -45,7 +45,7 @@ function build_runTask {
 
     # Parse parameters
     while getopts :c:r:t: parameter; do
-        case "$parameter" in
+        case "${parameter}" in
             c)
                 component="${OPTARG}"
             ;;
