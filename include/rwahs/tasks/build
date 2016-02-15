@@ -44,7 +44,7 @@ function build_runTask {
     apiJsonTemplate='{"tag_name":"release_%s","target_commitish":"%s","name":"%s","body":"Release tagged at %s","draft":false,"prerelease":false}'
 
     # Parse parameters
-    while getopts c:r:t: parameter; do
+    while getopts :c:r:t: parameter; do
         case "$parameter" in
             c)
                 component="${OPTARG}"
@@ -55,7 +55,13 @@ function build_runTask {
             t)
                 targetCommitish="${OPTARG}"
             ;;
-            *)
+            \?)
+                echo "Error: Invalid option '-${OPTARG}' provided to the 'build' task." >&2
+                build_showHelp "${programName}" "${toolsDir}" >&2
+                exit 1
+            ;;
+            :)
+                echo "Error: Option '-${OPTARG}' missing parameter value." >&2
                 build_showHelp "${programName}" "${toolsDir}" >&2
                 exit 1
             ;;
@@ -77,7 +83,7 @@ function build_runTask {
 
     # Display error and usage if any error occurred
     if [ -v error ]; then
-        echo "${error}" >&2
+        echo "Error: ${error}" >&2
         build_showHelp "${programName}" "${toolsDir}" >&2
         exit 1
     fi
