@@ -41,7 +41,7 @@ function deploy_runTask {
     shift 2
 
     # Parse parameters
-    while getopts c:e:r: parameter; do
+    while getopts :c:e:r: parameter; do
         case "$parameter" in
             c)
                 component="${OPTARG}"
@@ -52,7 +52,13 @@ function deploy_runTask {
             r)
                 releaseName="${OPTARG}"
             ;;
-            *)
+            \?)
+                echo "Error: Invalid option '-${OPTARG}' provided to the 'deploy' task." >&2
+                deploy_showHelp "${programName}" "${toolsDir}" >&2
+                exit 1
+            ;;
+            :)
+                echo "Error: Option '-${OPTARG}' missing parameter value." >&2
                 deploy_showHelp "${programName}" "${toolsDir}" >&2
                 exit 1
             ;;
