@@ -106,7 +106,8 @@ The use of standard and additional parameters is summarised in the following tab
 | `nuke`   | Optional`*`        |                  |                                         |
 | `import` | Optional`*`        |                  | `-n`                                    |
 
-`*` If the `-e <environment>` parameter is missing, the task will operate locally.
+`*` The `-e <environment>` parameter is optional if the `RWAHS_ENV` environment variable is set.  See "Running Commands
+Remotely" below for details.
 
 ## GitHub Access Token Generation
 
@@ -158,3 +159,15 @@ use the following command:
     curl -H "Authorization: token ${RWAHS_ACCESS_TOKEN}" https://api.github.com/users/<username> -I
 
 Where `<username>` is your GitHub username.
+
+## Running Commands Remotely
+
+Some tasks accept a `-e` parameter, which specifies the environment to run in.  If no `-e` is given, the task is run
+locally.  Similarly, if the `-e` value matches the `RWAHS_ENV` environment variable value, then the command is run
+locally.  Otherwise, the task is run remotely based on the environment's configuration settings.
+
+In order to prevent loops, the correct `RWAHS_ENV` variable **must** be configured globally for at least the user being
+used to run the remote commands.
+
+When running in an environment where `RWAHS_ENV` is set, specifying `-e` is optional unless the value is different 
+(i.e. it is a remote call to a different environment).

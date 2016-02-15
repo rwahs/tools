@@ -40,6 +40,9 @@ function deploy_runTask {
     toolsDir="${2}"
     shift 2
 
+    # Default values
+    environment=${RWAHS_ENV-}
+
     # Parse parameters
     while getopts :c:e:r: parameter; do
         case "${parameter}" in
@@ -70,8 +73,8 @@ function deploy_runTask {
         error="Required parameter 'component' not specified for 'deploy' task."
     elif [ ! -f "${toolsDir}/config/${programName}/components/${component}" ]; then
         error="Specified component '${component}' does not exist, see below for valid values."
-    elif [ ! -v environment ]; then
-        error="Required parameter 'environment' not specified for 'deploy' task."
+    elif [ ! -z "${environment}" ]; then
+        error="Required parameter 'environment' not specified for 'deploy' task and no 'RWAHS_ENV' value is set."
     elif [ ! -f "${toolsDir}/config/${programName}/env/${environment}" ]; then
         error="Specified environment '${environment}' does not exist, see below for valid values."
     elif [ ! -v releaseName ]; then
