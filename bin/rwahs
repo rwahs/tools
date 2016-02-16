@@ -57,9 +57,43 @@ function showTaskHelp {
     fi
 }
 
+# If the command should be executed remotely, output the full `ssh` command to execute, otherwise don't output anything
+# to indicate that the command should proceed locally.
+# If the command specifies an environment and it's not the same as the global `RWAHS_ENV`, then run the command
+# remotely based on the given environment's configuration; otherwise run the command locally.
+function getRemoteCommand {
+    local programName toolsDir environment
+    local repo repoDefaultTargetCommitish targetParent
+    local host user targetRoot
+
+    # Function arguments
+    programName="${1}"
+    toolsDir="${2}"
+    shift 2
+
+    # Parse parameters
+    while getopts :e: parameter; do
+        if [ "${parameter}" == "e" ]; then
+            environment="${OPTARG}"
+        fi
+    done
+
+    # To run remotely, either `environment` and `RWAHS_ENV` are both
+    if [ "${environment-${RWAHS_ENV-}}" != "${RWAHS_ENV-}" ]; then
+        # Include the tools component configuration, so we know where to run the command from.
+        source "${toolsDir}/config/${programName}/components/tools"
+
+        # Include the environment configuration for the SSH parameters.
+        source "${toolsDir}/config/${programName}/env/${environment}"
+
+        # Output the command to run; this is captured by the calling function.
+        echo ssh "${user}@${host}" "'${targetRoot}/${targetParent}/bin/${programName} $@'"
+    fi
+}
+
 # Main sequence
 function rwahsMain {
-    local toolsDir programName task
+    local toolsDir programName task remoteCommand
 
     # Default values
     toolsDir=$(readlink -f $(dirname $(dirname ${0})))
@@ -86,8 +120,13 @@ function rwahsMain {
             echo "Unknown task '${task}' specified, valid tasks are: $(ls -m "${toolsDir}/include/${programName}/tasks")" >&2
             exit 1
         else
-            source "${toolsDir}/include/${programName}/tasks/${task}"
-            ${task}_runTask "${programName}" "${toolsDir}" $@
+            remoteCommand=$(getRemoteCommand "${programName}" "${toolsDir}" $@)
+            if [ -z "${remoteCommand}" ]; then
+                source "${toolsDir}/include/${programName}/tasks/${task}"
+                ${task}_runTask "${programName}" "${toolsDir}" $@
+            else
+                ${remoteCommand}
+            fi
         fi
     fi
 }

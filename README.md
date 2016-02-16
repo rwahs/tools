@@ -159,6 +159,18 @@ use the following command:
 
 Where `<username>` is your GitHub username.
 
+## Running Commands Remotely
+
+Some tasks accept a `-e` parameter, which specifies the environment to run in.  If no `-e` is given, the task is run
+locally.  Similarly, if the `-e` value matches the `RWAHS_ENV` environment variable value, then the command is run
+locally.  Otherwise, the task is run remotely based on the environment's configuration settings.
+
+In order to prevent loops, the correct `RWAHS_ENV` variable **must** be configured globally for at least the user being
+used to run the remote commands.
+
+When running in an environment where `RWAHS_ENV` is set, specifying `-e` is optional unless the value is different 
+(i.e. it is a remote call to a different environment).
+
 ## Initial Server Setup
 
 There are some steps that need to be completed to allow remote deployment to work correctly.
