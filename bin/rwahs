@@ -62,14 +62,15 @@ function showTaskHelp {
 # If the command specifies an environment and it's not the same as the global `RWAHS_ENV`, then run the command
 # remotely based on the given environment's configuration; otherwise run the command locally.
 function getRemoteCommand {
-    local programName toolsDir environment
+    local programName toolsDir task environment
     local repo repoDefaultTargetCommitish targetParent
     local host user targetRoot
 
     # Function arguments
     programName="${1}"
     toolsDir="${2}"
-    shift 2
+    task="${3}"
+    shift 3
 
     # Parse parameters
     while getopts :e: parameter; do
@@ -87,7 +88,7 @@ function getRemoteCommand {
         source "${toolsDir}/config/${programName}/env/${environment}"
 
         # Output the command to run; this is captured by the calling function.
-        echo ssh "${user}@${host}" "'${targetRoot}/${targetParent}/current/bin/${programName} $@'"
+        echo ssh "${user}@${host}" "${targetRoot}/${targetParent}/current/bin/${programName} ${task} $@"
     fi
 }
 
@@ -120,7 +121,7 @@ function rwahsMain {
             echo "Unknown task '${task}' specified, valid tasks are: $(ls -m "${toolsDir}/include/${programName}/tasks")" >&2
             exit 1
         else
-            remoteCommand=$(getRemoteCommand "${programName}" "${toolsDir}" $@)
+            remoteCommand=$(getRemoteCommand "${programName}" "${toolsDir}" "${task}" $@)
             if [ -z "${remoteCommand}" ]; then
                 source "${toolsDir}/include/${programName}/tasks/${task}"
                 ${task}_runTask "${programName}" "${toolsDir}" $@
