@@ -6,4 +6,6 @@
 set -e
 set -u
 
-component='profile'
+repo='rwahs/installation-profile'
+repoDefaultTargetCommitish='master'
+targetParent='local/installation-profile'

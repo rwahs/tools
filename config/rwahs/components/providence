@@ -6,4 +6,6 @@
 set -e
 set -u
 
-component='providence'
+repo='rwahs/providence'
+repoDefaultTargetCommitish='master-fix'
+targetParent='web/providence'

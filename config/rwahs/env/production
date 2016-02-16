@@ -6,4 +6,6 @@
 set -e
 set -u
 
-target='production'
+enabled=
+host=
+targetRoot='/data'

@@ -7,11 +7,108 @@ set -e
 set -u
 
 function build_showHelp {
-    echo "TASK DESCRIPTION:"
-    echo "    Create a new release, which is a tag in the code repository."
+    local programName toolsDir
+
+    # Function arguments
+    programName="${1}"
+    toolsDir="${2}"
+    shift 2
+
+    echo
+    echo "Create a new release, which is a tag in the code repository."
+    echo
+    echo "USAGE:"
+    echo "    ${programName} build -c <component> [-t <target-commitish>] [-r <release>]"
+    echo
+    echo "WHERE:"
+    echo "    -t <target-commitish> gives the branch or commit that should be released; if omitted, the default branch"
+    echo "         according to the component configuration (not the default branch configured in github) will be used."
+    echo "    -c <component> gives the name of the component to process."
+    echo "         Valid values: $(ls -m "${toolsDir}/config/${programName}/components")"
+    echo "    -r <release> gives the optional release tag override; if omitted, a value will be generated and output."
     echo
 }
 
 function build_runTask {
-    echo "Running 'build' task..."
+    local programName toolsDir ghApiRoot component releaseName releaseDate targetCommitish apiJsonTemplate apiJson
+    local repo repoDefaultTargetCommitish targetParent error
+
+    # Function arguments
+    programName="${1}"
+    toolsDir="${2}"
+    shift 2
+
+    # Default values
+    ghApiRoot="https://api.github.com"
+    releaseDate=$(date "+%Y-%m-%d %H:%M:%S")
+    apiJsonTemplate='{"tag_name":"release_%s","target_commitish":"%s","name":"%s","body":"Release tagged at %s","draft":false,"prerelease":false}'
+
+    # Parse parameters
+    while getopts :c:r:t: parameter; do
+        case "$parameter" in
+            c)
+                component="${OPTARG}"
+            ;;
+            r)
+                releaseName="${OPTARG}"
+            ;;
+            t)
+                targetCommitish="${OPTARG}"
+            ;;
+            \?)
+                echo "Error: Invalid option '-${OPTARG}' provided to the 'build' task." >&2
+                build_showHelp "${programName}" "${toolsDir}" >&2
+                exit 1
+            ;;
+            :)
+                echo "Error: Option '-${OPTARG}' missing parameter value." >&2
+                build_showHelp "${programName}" "${toolsDir}" >&2
+                exit 1
+            ;;
+        esac
+    done
+
+    # Check for errors and required executables
+    if [ ! -v component ]; then
+        error="Required parameter 'component' not specified for 'build' task."
+    elif [ ! -f "${toolsDir}/config/${programName}/components/${component}" ]; then
+        error="Specified component '${component}' does not exist, see below for valid values."
+    elif [ ! $(command -v "git") ]; then
+        error="The 'git' executable was not found and is required for the 'build' task; try 'apt-get install git'."
+    elif [ ! $(command -v "curl") ]; then
+        error="The 'curl' executable was not found and is required for the 'build' task; try 'apt-get install curl'."
+    elif [ ! -v RWAHS_ACCESS_TOKEN ]; then
+        error="The 'RWAHS_ACCESS_TOKEN' variable is undefined or empty; set it to a valid GitHub access token."
+    fi
+
+    # Display error and usage if any error occurred
+    if [ -v error ]; then
+        echo "Error: ${error}" >&2
+        build_showHelp "${programName}" "${toolsDir}" >&2
+        exit 1
+    fi
+
+    # Import the component settings
+    source "${toolsDir}/config/${programName}/components/${component}"
+
+    # Ensure we have a release name, default to the date/time stamp if none specified
+    if [ ! -v releaseName ]; then
+        releaseName=$(date +%Y%m%d_%H%M%S --date="${releaseDate}")
+    fi
+
+    # Ensure we have a target commitish, default to the value given in component configuration
+    if [ ! -v targetCommitish ]; then
+        targetCommitish="${repoDefaultTargetCommitish}"
+    fi
+
+    # Do the work
+    echo "Running 'build' task for component '${component}'..."
+    apiJson=$(printf "${apiJsonTemplate}" "${releaseName}" "${targetCommitish}" "${releaseName}" "${releaseDate}")
+    curl \
+        --request POST \
+        --user-agent "RWAHS Deployment Script" \
+        --header "Accept: application/vnd.github.v3+json" \
+        --header "Authorization: token ${RWAHS_ACCESS_TOKEN}" \
+        --data "${apiJson}" \
+        "${ghApiRoot}/repos/${repo}/releases"
 }

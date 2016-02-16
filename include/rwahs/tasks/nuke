@@ -7,12 +7,33 @@ set -e
 set -u
 
 function nuke_showHelp {
-    echo "TASK DESCRIPTION:"
-    echo "    Remove all data from the database, restoring it to a clean state following a fresh installation of the "
-    echo "    current profile (i.e. the profile most recently deployed to the given environment)."
+    local programName toolsDir
+
+    # Function arguments
+    programName="${1}"
+    toolsDir="${2}"
+    shift 2
+
+    echo
+    echo "Remove all data from the database, restoring it to a clean state following a fresh installation of the"
+    echo "current profile (i.e. the profile most recently deployed to the given environment)."
+    echo
+    echo "USAGE:"
+    echo "    ${programName} nuke -e <environment>"
+    echo
+    echo "WHERE:"
+    echo "    -e <environment> gives the name of the environment to nuke."
+    echo "         Valid values: $(ls -m "${toolsDir}/config/${programName}/env")"
     echo
 }
 
 function nuke_runTask {
+    local programName toolsDir
+
+    # Function arguments
+    programName="${1}"
+    toolsDir="${2}"
+    shift 2
+
     echo "Running 'nuke' task..."
 }

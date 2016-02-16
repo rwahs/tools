@@ -6,4 +6,6 @@
 set -e
 set -u
 
-target='staging'
+enabled='true'
+host='52.62.226.104'
+targetRoot='/data'

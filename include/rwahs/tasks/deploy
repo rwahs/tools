@@ -7,12 +7,36 @@ set -e
 set -u
 
 function deploy_showHelp {
-    echo "TASK DESCRIPTION:"
-    echo "    Transfer the specified release to the specified environment and update the environment to make the"
-    echo "    specified release the 'current' version used in the given environment."
+    local programName toolsDir
+
+    # Function arguments
+    programName="${1}"
+    toolsDir="${2}"
+    shift 2
+
+    echo
+    echo "Transfer the specified release to the specified environment and update the environment to make the specified"
+    echo "release the 'current' version in the given environment."
+    echo
+    echo "USAGE:"
+    echo "    ${programName} deploy -e <environment> -c <component> [-r <release>]"
+    echo
+    echo "WHERE:"
+    echo "    -e <environment> gives the name of the environment to deploy into."
+    echo "         Valid values: $(ls -m "${toolsDir}/config/${programName}/env")"
+    echo "    -c <component> gives the name of the component to process."
+    echo "         Valid values: $(ls -m "${toolsDir}/config/${programName}/components")"
+    echo "    -r <release> gives the release tag to deploy (required for \`deploy\` task)"
     echo
 }
 
 function deploy_runTask {
+    local programName toolsDir
+
+    # Function arguments
+    programName="${1}"
+    toolsDir="${2}"
+    shift 2
+
     echo "Running 'deploy' task..."
 }

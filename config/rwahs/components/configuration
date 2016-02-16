@@ -6,4 +6,6 @@
 set -e
 set -u
 
-component='configuration'
+repo='rwahs/providence-configuration'
+repoDefaultTargetCommitish='master'
+targetParent='local/providence-configuration'
