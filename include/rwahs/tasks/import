@@ -30,12 +30,64 @@ function import_showHelp {
 }
 
 function import_runTask {
-    local programName toolsDir
+    local programName toolsDir environment nukeFirst error
+    local repo repoDefaultTargetCommitish targetParent
+    local host user targetRoot adminEmailAddress
 
     # Function arguments
     programName="${1}"
     toolsDir="${2}"
     shift 2
 
+    # Default values
+    environment=${RWAHS_ENV-}
+
+    # Parse parameters
+    while getopts :e:n parameter; do
+        case "$parameter" in
+            e)
+                environment="${OPTARG}"
+            ;;
+            n)
+                nukeFirst=true
+            ;;
+            \?)
+                echo "Error: Invalid option '-${OPTARG}' provided to the 'import' task." >&2
+                import_showHelp "${programName}" "${toolsDir}" >&2
+                exit 1
+            ;;
+            :)
+                echo "Error: Option '-${OPTARG}' missing parameter value." >&2
+                import_showHelp "${programName}" "${toolsDir}" >&2
+                exit 1
+            ;;
+        esac
+    done
+
+    # Check for errors and required executables
+    if [ ! -v environment ]; then
+        error="Required parameter 'environment' not specified for 'import' task."
+    elif [ ! -f "${toolsDir}/config/${programName}/env/${environment}" ]; then
+        error="Specified environment '${environment}' does not exist, see below for valid values."
+    fi
+
+    # Display error and usage if any error occurred
+    if [ -v error ]; then
+        echo "${error}" >&2
+        import_showHelp "${programName}" "${toolsDir}" >&2
+        exit 1
+    fi
+
+    # Nuke first if requested
+    if [ -v nukeFirst ]; then
+        "${toolsDir}/bin/${programName}" nuke -e "${environment}"
+    fi
+
+    # Import the environment settings and the "importer" component settings
+    source "${toolsDir}/config/${programName}/env/${environment}"
+    source "${toolsDir}/config/${programName}/components/importer"
+
+    # Do the work
     echo "Running 'import' task..."
+    "${targetRoot}/${targetParent}/current/importAllData"
 }
