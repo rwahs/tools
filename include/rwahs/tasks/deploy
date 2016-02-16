@@ -97,7 +97,7 @@ function deploy_runTask {
     source "${toolsDir}/config/${programName}/env/${environment}"
 
     # Run preDeploy hook, if defined
-    if [ $(type -t preDeploy) == "function" ]; then
+    if [ "$(type -t preDeploy)" == "function" ]; then
         echo "Running pre-deploy hook..."
         preDeploy "${programName}" "${toolsDir}"
     fi
@@ -113,7 +113,7 @@ function deploy_runTask {
     ln --symbolic "${targetPath}" "${targetSymlinkPath}"
 
     # Run postDeploy hook, if defined
-    if [ $(type -t postDeploy) == "function" ]; then
+    if [ "$(type -t postDeploy)" == "function" ]; then
         echo "Running post-deploy hook..."
         postDeploy "${programName}" "${toolsDir}"
     fi
