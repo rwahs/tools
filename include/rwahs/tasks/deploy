@@ -93,6 +93,12 @@ function deploy_runTask {
     source "${toolsDir}/config/${programName}/components/${component}"
     source "${toolsDir}/config/${programName}/env/${environment}"
 
+    # Run preDeploy hook, if defined
+    if [ $(type -t preDeploy) == "function" ]; then
+        echo "Running pre-deploy hook..."
+        preDeploy "${programName}" "${toolsDir}"
+    fi
+
     # Do the work
     echo "Running 'deploy' task..."
     releaseUrl="https://github.com/${repo}/archive/release_${releaseName}.tar.gz"
@@ -105,6 +111,7 @@ function deploy_runTask {
 
     # Run postDeploy hook, if defined
     if [ $(type -t postDeploy) == "function" ]; then
+        echo "Running post-deploy hook..."
         postDeploy "${programName}" "${toolsDir}"
     fi
 }
