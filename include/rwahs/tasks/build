@@ -30,8 +30,8 @@ function build_showHelp {
 }
 
 function build_runTask {
-    local programName toolsDir ghApiRoot component releaseName releaseDate targetCommitish apiJsonTemplate apiJson
-    local repo repoDefaultTargetCommitish targetParent error
+    local programName toolsDir ghApiRoot component releaseName releaseDate targetCommitish apiJsonTemplate apiJson error
+    local repo repoDefaultTargetCommitish targetParent
 
     # Function arguments
     programName="${1}"
@@ -45,7 +45,7 @@ function build_runTask {
 
     # Parse parameters
     while getopts :c:r:t: parameter; do
-        case "$parameter" in
+        case "${parameter}" in
             c)
                 component="${OPTARG}"
             ;;

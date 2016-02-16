@@ -66,7 +66,7 @@ Syntax for the `deploy` task:
 
 Following the deployment, any required initialisation tasks are performed.  Specifically, when the "providence"
 component is deployed, any pending database migrations are applied.  Additionally, caches are cleaned and services are
-restarted as appropriate.
+restarted as appropriate.  See below for instructions on allowing an unprivileged user to restart services.
 
 ### Nuke
 
@@ -158,3 +158,46 @@ use the following command:
     curl -H "Authorization: token ${RWAHS_ACCESS_TOKEN}" https://api.github.com/users/<username> -I
 
 Where `<username>` is your GitHub username.
+
+## Initial Server Setup
+
+There are some steps that need to be completed to allow remote deployment to work correctly.
+
+### Allowing Service Restarts
+
+To allow a regular, non-privileged user to restart services, which occurs following a `deploy` of the `providence` or 
+`configuration` components, the `service` command needs to be able to be run as root.
+
+Add the following to the `/etc/sudoers` file:
+
+    <user> ALL=(root) NOPASSWD: /usr/sbin/service
+
+Where `<user>` is the username specified in the relevant environment's settings.
+
+Note that, as with any provision for non-privileged users to run privileged commands, this presents a security risk.
+
+### First Installation of `tools`
+
+The `tools` component can deploy itself remotely, however it needs to be installed on the remote machine before this
+operation will work.  Note this only applies to the `tools` component, once that is available remotely, then the other
+components can be deployed directly.
+
+To install the `tools` component in the first instance, clone the repo locally and then use the following command:
+
+    rsync --exclude ".git" </path/to/local/repo/> <user>@<host>:</path/to/tools/>
+
+Where `<user>` and `<host>` are the ssh username and hostname, which should be the same as specified in the environment
+configuration, `</path/to/local/repo/>` is the local path where you cloned the repository (maybe `./`), and 
+`</path/to/tools/>` is the path as specified by the environment configuration and the `tools` component configuration.
+For example:
+
+    rsync --exclude ".git" ./ ca@demo.rwahs.tld:/data/local/tools/
+
+### Setting `RWAHS_ENV`
+
+To prevent an infinite loop, the `RWAHS_ENV` environment variable must be set to the correct value on the remote 
+machine, for at least the user doing the deployments.  For example, if running a task with `-e staging` then the
+`staging` environment configuration is used to connect to a given `user@host`, and run the same command that was used
+locally.  On the remote machine, `RWAHS_ENV` must be set to `staging` and then the script will know to run locally.
+
+A good place to set the variable globally is in `/etc/environment`.

@@ -6,6 +6,6 @@
 set -e
 set -u
 
-enabled='true'
 host='52.62.226.104'
+user='ca'
 targetRoot='/data'

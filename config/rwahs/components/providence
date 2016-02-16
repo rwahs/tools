@@ -9,3 +9,21 @@ set -u
 repo='rwahs/providence'
 repoDefaultTargetCommitish='master-fix'
 targetParent='web/providence'
+
+function preDeploy {
+    if [ ! -v COLLECTIVEACCESS_HOME ]; then
+        echo "Error: The COLLECTIVEACCESS_HOME environment variable is required to deploy the 'providence' component" >&2
+        exit 1
+    elif [ ! -f "${COLLECTIVEACCESS_HOME}/support/bin/caUtils" ]; then
+        echo "Error: The COLLECTIVEACCESS_HOME environment variable does not point to a valid providence installation" >&2
+        exit 1
+    fi
+    sudo service apache2 stop
+    sudo service php5-fpm stop
+}
+
+function postDeploy {
+    "${COLLECTIVEACCESS_HOME}/support/bin/caUtils" update-database-schema
+    sudo service apache2 start
+    sudo service php5-fpm start
+}

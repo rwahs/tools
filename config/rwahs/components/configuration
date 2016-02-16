@@ -9,3 +9,13 @@ set -u
 repo='rwahs/providence-configuration'
 repoDefaultTargetCommitish='master'
 targetParent='local/providence-configuration'
+
+function preDeploy {
+    sudo service apache2 stop
+    sudo service php5-fpm stop
+}
+
+function postDeploy {
+    sudo service apache2 start
+    sudo service php5-fpm start
+}
