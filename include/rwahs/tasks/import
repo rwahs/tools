@@ -39,6 +39,9 @@ function import_runTask {
     toolsDir="${2}"
     shift 2
 
+    # Default values
+    environment=${RWAHS_ENV-}
+
     # Parse parameters
     while getopts :e:n parameter; do
         case "$parameter" in
@@ -66,10 +69,6 @@ function import_runTask {
         error="Required parameter 'environment' not specified for 'import' task."
     elif [ ! -f "${toolsDir}/config/${programName}/env/${environment}" ]; then
         error="Specified environment '${environment}' does not exist, see below for valid values."
-    elif [ ! -v COLLECTIVEACCESS_HOME ]; then
-        error="The COLLECTIVEACCESS_HOME environment variable is not set, this is required for the 'import' task."
-    elif [ ! -f "${COLLECTIVEACCESS_HOME}/support/bin/caUtils" ]; then
-        error="The COLLECTIVEACCESS_HOME environment variable does not refer to a valid providence installation."
     fi
 
     # Display error and usage if any error occurred
