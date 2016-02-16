@@ -73,7 +73,7 @@ function deploy_runTask {
         error="Required parameter 'component' not specified for 'deploy' task."
     elif [ ! -f "${toolsDir}/config/${programName}/components/${component}" ]; then
         error="Specified component '${component}' does not exist, see below for valid values."
-    elif [ ! -z "${environment}" ]; then
+    elif [ -z "${environment}" ]; then
         error="Required parameter 'environment' not specified for 'deploy' task and no 'RWAHS_ENV' value is set."
     elif [ ! -f "${toolsDir}/config/${programName}/env/${environment}" ]; then
         error="Specified environment '${environment}' does not exist, see below for valid values."
