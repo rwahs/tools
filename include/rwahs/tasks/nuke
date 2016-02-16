@@ -37,6 +37,9 @@ function nuke_runTask {
     toolsDir="${2}"
     shift 2
 
+    # Default values
+    environment=${RWAHS_ENV-}
+
     # Parse parameters
     while getopts :e: parameter; do
         case "$parameter" in
@@ -80,10 +83,9 @@ function nuke_runTask {
 
     # Do the work
     echo "Running 'nuke' task..."
-    ${COLLECTIVEACCESS_HOME}/support/bin/caUtils \
+    echo ${COLLECTIVEACCESS_HOME}/support/bin/caUtils install \
         --profile-directory "${targetRoot}/${targetParent}/current" \
         --profile-name "rwahs" \
         --admin-email "${adminEmailAddress}" \
-        --overwrite \
-        install
+        --overwrite
 }
