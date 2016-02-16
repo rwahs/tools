@@ -49,7 +49,7 @@ function import_runTask {
                 environment="${OPTARG}"
             ;;
             n)
-                nukeFirst="true"
+                nukeFirst=true
             ;;
             \?)
                 echo "Error: Invalid option '-${OPTARG}' provided to the 'import' task." >&2
