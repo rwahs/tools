@@ -194,16 +194,14 @@ The `tools` component can deploy itself remotely, however it needs to be install
 operation will work.  Note this only applies to the `tools` component, once that is available remotely, then the other
 components can be deployed directly.
 
-To install the `tools` component in the first instance, clone the repo locally and then use the following command:
+To install the `tools` component in the first instance, perform the following steps:
 
-    rsync --exclude ".git" </path/to/local/repo/> <user>@<host>:</path/to/tools/>
-
-Where `<user>` and `<host>` are the ssh username and hostname, which should be the same as specified in the environment
-configuration, `</path/to/local/repo/>` is the local path where you cloned the repository (maybe `./`), and 
-`</path/to/tools/>` is the path as specified by the environment configuration and the `tools` component configuration.
-For example:
-
-    rsync --exclude ".git" ./ ca@demo.rwahs.tld:/data/local/tools/
+    local$ rwahs build -c tools
+    local$ ssh <user@host>
+    remote$ mkdir --parents </path/to/tools>/<release-name>
+    remote$ cd </path/to/tools>/<release-name>
+    remote$ curl --location "https://github.com/rwahs/tools/archive/<release-name>.tar.gz" | tar --extract --gunzip --strip-components=1
+    remote$ ln -s </path/to/tools>/<release-name> </path/to/tools>/current
 
 ### Setting `RWAHS_ENV`
 
