@@ -198,9 +198,10 @@ To install the `tools` component in the first instance, perform the following st
 
     local$ rwahs build -c tools
     local$ ssh <user@host>
-    remote$ mkdir --parents </path/to/tools>
-    remote$ cd </path/to/tools>
+    remote$ mkdir --parents </path/to/tools>/<release-name>
+    remote$ cd </path/to/tools>/<release-name>
     remote$ curl --location "https://github.com/rwahs/tools/archive/<release-name>.tar.gz" | tar --extract --gunzip --strip-components=1
+    remote$ ln -s </path/to/tools>/<release-name> </path/to/tools>/current
 
 ### Setting `RWAHS_ENV`
 
