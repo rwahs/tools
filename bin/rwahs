@@ -57,6 +57,18 @@ function showTaskHelp {
     fi
 }
 
+# Retrieve the value of the `-e` option, which cannot be determined using `getopts` unless all possible options are
+# listed in the option specifier string.  Output the value of the `-e` option for capture by calling function.
+function getEnvironmentOption {
+    while [ $# -gt 1 ]; do
+        if [ "${1}" == "-e" ]; then
+            echo "${2}"
+            return
+        fi
+        shift
+    done
+}
+
 # If the command should be executed remotely, output the full `ssh` command to execute, otherwise don't output anything
 # to indicate that the command should proceed locally.
 # If the command specifies an environment and it's not the same as the global `RWAHS_ENV`, then run the command
@@ -72,12 +84,8 @@ function getRemoteCommand {
     task="${3}"
     shift 3
 
-    # Parse parameters
-    while getopts :e: parameter; do
-        if [ "${parameter}" == "e" ]; then
-            environment="${OPTARG}"
-        fi
-    done
+    # Get the environment
+    environment=$(getEnvironmentOption $@)
 
     # To run remotely, either `environment` and `RWAHS_ENV` are both
     if [ "${environment-${RWAHS_ENV-}}" != "${RWAHS_ENV-}" ]; then
@@ -99,7 +107,7 @@ function rwahsMain {
     # Default values
     toolsDir=$(readlink -f $(dirname $(dirname ${0})))
     programName=$(basename ${0})
-    task='help'
+    task="help"
 
     # Read task, if not specified then assume "help"
     if [ $# -gt 0 ]; then
