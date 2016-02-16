@@ -8,4 +8,4 @@ set -u
 
 repo='rwahs/import-scripts'
 repoDefaultTargetCommitish='master'
-targetParent='local/import-scripts'
+targetParent='import-scripts'

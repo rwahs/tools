@@ -8,4 +8,4 @@ set -u
 
 repo='rwahs/installation-profile'
 repoDefaultTargetCommitish='master'
-targetParent='local/installation-profile'
+targetParent='installation-profile'
