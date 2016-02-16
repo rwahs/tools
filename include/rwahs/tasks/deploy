@@ -33,7 +33,7 @@ function deploy_showHelp {
 function deploy_runTask {
     local programName toolsDir component environment releaseName targetPath targetSymlinkPath error
     local repo repoDefaultTargetCommitish targetParent
-    local host user targetRoot
+    local host user targetRoot adminEmailAddress
 
     # Function arguments
     programName="${1}"
