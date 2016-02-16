@@ -101,7 +101,7 @@ The use of standard and additional parameters is summarised in the following tab
 
 | Task     | `-e <environment>` | `-c <component>` | Additional parameters (mostly optional) |
 |----------|--------------------|------------------|-----------------------------------------|
-| `build`  |                    | Required         | `-t <target-commitish>`; `-r <release>` |
+| `build`  |                    | Required         | `-t <target-commitish>` `-r <release>`  |
 | `deploy` | Optional`*`        | Required         | `-r <release>` (Required)               |
 | `nuke`   | Optional`*`        |                  |                                         |
 | `import` | Optional`*`        |                  | `-n`                                    |
@@ -113,7 +113,7 @@ The use of standard and additional parameters is summarised in the following tab
 The `build` task requires a GitHub access token to be generated and set as the value of the `RWAHS_ACCESS_TOKEN`
 environment variable.  To create a token, use the following command syntax:
 
-    curl -u <username> --data '{"note":"<note>","scopes":["repo"],client_id":"<client_id>","client_secret":"<client_secret>","fingerprint":"<fingerprint>"}' https://api.github.com/authorizations
+    curl -u <username> --data '{"note":"<note>","scopes":["repo"],"client_id":"<client_id>","client_secret":"<client_secret>","fingerprint":"<fingerprint>"}' https://api.github.com/authorizations
 
 Where:
 
