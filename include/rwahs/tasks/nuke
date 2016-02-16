@@ -28,12 +28,64 @@ function nuke_showHelp {
 }
 
 function nuke_runTask {
-    local programName toolsDir
+    local programName toolsDir environment error
+    local repo repoDefaultTargetCommitish targetParent
+    local host user targetRoot adminEmailAddress
 
     # Function arguments
     programName="${1}"
     toolsDir="${2}"
     shift 2
 
+    # Default values
+    environment=${RWAHS_ENV-}
+
+    # Parse parameters
+    while getopts :e: parameter; do
+        case "$parameter" in
+            e)
+                environment="${OPTARG}"
+            ;;
+            \?)
+                echo "Error: Invalid option '-${OPTARG}' provided to the 'nuke' task." >&2
+                nuke_showHelp "${programName}" "${toolsDir}" >&2
+                exit 1
+            ;;
+            :)
+                echo "Error: Option '-${OPTARG}' missing parameter value." >&2
+                nuke_showHelp "${programName}" "${toolsDir}" >&2
+                exit 1
+            ;;
+        esac
+    done
+
+    # Check for errors and required executables
+    if [ ! -v environment ]; then
+        error="Required parameter 'environment' not specified for 'nuke' task."
+    elif [ ! -f "${toolsDir}/config/${programName}/env/${environment}" ]; then
+        error="Specified environment '${environment}' does not exist, see below for valid values."
+    elif [ ! -v COLLECTIVEACCESS_HOME ]; then
+        error="The COLLECTIVEACCESS_HOME environment variable is not set, this is required for the 'nuke' task."
+    elif [ ! -f "${COLLECTIVEACCESS_HOME}/support/bin/caUtils" ]; then
+        error="The COLLECTIVEACCESS_HOME environment variable does not refer to a valid providence installation."
+    fi
+
+    # Display error and usage if any error occurred
+    if [ -v error ]; then
+        echo "${error}" >&2
+        nuke_showHelp "${programName}" "${toolsDir}" >&2
+        exit 1
+    fi
+
+    # Import the environment settings and the "profile" component settings
+    source "${toolsDir}/config/${programName}/env/${environment}"
+    source "${toolsDir}/config/${programName}/components/profile"
+
+    # Do the work
     echo "Running 'nuke' task..."
+    echo ${COLLECTIVEACCESS_HOME}/support/bin/caUtils install \
+        --profile-directory "${targetRoot}/${targetParent}/current" \
+        --profile-name "rwahs" \
+        --admin-email "${adminEmailAddress}" \
+        --overwrite
 }
