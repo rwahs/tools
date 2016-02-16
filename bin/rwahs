@@ -50,6 +50,7 @@ function showTaskHelp {
     # Display task-specific help text
     if [ ! -f "${toolsDir}/include/${programName}/tasks/${helpTask}" ]; then
         echo "Requested help for unknown task '${helpTask}'; valid tasks are: $(ls -m "${toolsDir}/include/${programName}/tasks")"
+        exit 1
     else
         source "${toolsDir}/include/${programName}/tasks/${helpTask}"
         ${helpTask}_showHelp "${programName}" "${toolsDir}"
