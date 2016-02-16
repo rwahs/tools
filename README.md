@@ -161,15 +161,32 @@ Where `<username>` is your GitHub username.
 
 ## Running Commands Remotely
 
+### Concept of Operation
+
 Some tasks accept a `-e` parameter, which specifies the environment to run in.  If no `-e` is given, the task is run
 locally.  Similarly, if the `-e` value matches the `RWAHS_ENV` environment variable value, then the command is run
 locally.  Otherwise, the task is run remotely based on the environment's configuration settings.
+
+### The `RWAHS_ENV` Variable
 
 In order to prevent loops, the correct `RWAHS_ENV` variable **must** be configured globally for at least the user being
 used to run the remote commands.
 
 When running in an environment where `RWAHS_ENV` is set, specifying `-e` is optional unless the value is different 
 (i.e. it is a remote call to a different environment).
+
+### Using Identity Files
+
+The `rwahs` script assumes that the local user can `ssh` to the remote server without specifying an identity file.  If
+an identity file is required (e.g. when using AWS EC2), then it should be specified in an `ssh` configuration file, for
+example `~/.ssh/config`:
+
+    Host <host>
+        IdentityFile ~/.ssh/<filename>.pem
+
+Where `<host>` is the hostname configured in the environment configuration file, and `<filename>` is the name of the
+PEM file.  The file could be anywhere, but it is standard to store it in `~/.ssh`.  Note also that the file permissions
+must be restrictive, i.e. `chmod 400`, for `ssh` to use it.
 
 ## Initial Server Setup
 
