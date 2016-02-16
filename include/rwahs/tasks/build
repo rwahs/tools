@@ -40,7 +40,7 @@ function build_runTask {
 
     # Default values
     ghApiRoot="https://api.github.com"
-    releaseDate=$(date "+%Y/%m/%d %H:%M:%S")
+    releaseDate=$(date "+%Y-%m-%d %H:%M:%S")
     apiJsonTemplate='{"tag_name":"release_%s","target_commitish":"%s","name":"%s","body":"Release tagged at %s","draft":false,"prerelease":false}'
 
     # Parse parameters
