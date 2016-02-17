@@ -8,7 +8,7 @@ set -u
 
 repo='rwahs/providence'
 repoDefaultTargetCommitish='master-fix'
-targetParent='web/providence'
+targetParent='providence'
 
 function preDeploy {
     if [ ! -v COLLECTIVEACCESS_HOME ]; then

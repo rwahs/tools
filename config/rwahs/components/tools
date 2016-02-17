@@ -8,4 +8,4 @@ set -u
 
 repo='rwahs/tools'
 repoDefaultTargetCommitish='master'
-targetParent='local/tools'
+targetParent='tools'

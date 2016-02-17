@@ -8,7 +8,7 @@ set -u
 
 repo='rwahs/providence-configuration'
 repoDefaultTargetCommitish='master'
-targetParent='local/providence-configuration'
+targetParent='providence-configuration'
 
 function preDeploy {
     sudo service apache2 stop
