@@ -123,8 +123,12 @@ function deploy_runTask {
     releaseUrl="https://github.com/${repo}/archive/release_${releaseName}.tar.gz"
     targetPath="${targetRoot}/${targetParent}/${releaseName}"
     targetSymlinkPath="${targetRoot}/${targetParent}/current"
-    mkdir --parents "${targetPath}"
-    curl --location "${releaseUrl}" | tar --extract --gunzip --strip-components=1 --directory="${targetPath}"
+    if [ -d "${targetPath}" ]; then
+        echo "Target path '${targetPath}' already exists, skipping download and extraction of release archive."
+    else
+        mkdir --parents "${targetPath}"
+        curl --location "${releaseUrl}" | tar --extract --gunzip --strip-components=1 --directory="${targetPath}"
+    fi
     rm --force "${targetSymlinkPath}"
     ln --symbolic "${targetPath}" "${targetSymlinkPath}"
 
