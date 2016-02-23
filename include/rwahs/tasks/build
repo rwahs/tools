@@ -30,7 +30,7 @@ function build_showHelp {
 }
 
 function build_runTask {
-    local programName toolsDir ghApiRoot component releaseName releaseDate targetCommitish apiJsonTemplate apiJson error
+    local programName toolsDir ghApiRoot component releaseName releaseDate targetCommitish error
     local repo repoDefaultTargetCommitish targetParent
 
     # Function arguments
@@ -39,9 +39,7 @@ function build_runTask {
     shift 2
 
     # Default values
-    ghApiRoot="https://api.github.com"
     releaseDate=$(date "+%Y-%m-%d %H:%M:%S")
-    apiJsonTemplate='{"tag_name":"release_%s","target_commitish":"%s","name":"%s","body":"Release tagged at %s","draft":false,"prerelease":false}'
 
     # Parse parameters
     while getopts :c:r:t: parameter; do
@@ -103,12 +101,6 @@ function build_runTask {
 
     # Do the work
     echo "Running 'build' task for component '${component}'..."
-    apiJson=$(printf "${apiJsonTemplate}" "${releaseName}" "${targetCommitish}" "${releaseName}" "${releaseDate}")
-    curl \
-        --request POST \
-        --user-agent "RWAHS Deployment Script" \
-        --header "Accept: application/vnd.github.v3+json" \
-        --header "Authorization: token ${RWAHS_ACCESS_TOKEN}" \
-        --data "${apiJson}" \
-        "${ghApiRoot}/repos/${repo}/releases"
+    github_createRelease "${RWAHS_ACCESS_TOKEN}" "${repo}" "${releaseName}" "${targetCommitish}" "Release tagged at ${releaseDate}" >/dev/null 2>&1
+    echo "Created release name: ${releaseName}"
 }
