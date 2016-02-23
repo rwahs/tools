@@ -8,9 +8,10 @@ The `rwahs` command handles all steps of integration and deployment via various 
 
 The general syntax is:
 
-    rwahs <task> -e <environment> -c <component>
+    rwahs <task> <options>
 
-See below for further details, including a table summarising the options for each task.
+Where `<task>` is the name of the task to run, and `<options>` is any number of options in the form `-x <value>` (where
+`x` is any single character).  See below for further details, including a table summarising the options for each task.
 
 ## Environments
 
@@ -40,8 +41,8 @@ Syntax for the `build` task:
 
 The optional `-t` parameter specifies the branch or commit that should form the basis of the tag and release.
 
-The optional `-r` parameter specifies the name of the release, which must be unique for the given component.  If the 
-name already exists, an error is emitted.  If the `-r` option is omitted, the release name is generated based on the 
+The optional `-r` parameter specifies the name of the release, which must be unique for the given component.  If the
+name already exists, an error is emitted.  If the `-r` option is omitted, the release name is generated based on the
 current timestamp.
 
 Note this task does not understand the `-e` option, because releases exist independently of environments.
@@ -51,18 +52,21 @@ or similar, or as a prefix to the call to `rwahs`:
 
      RWAHS_ACCESS_TOKEN='access_token' rwahs build ...
 
-This variable is defined externally so that it is not committed to any code repository.  If the variable is not 
+This variable is defined externally so that it is not committed to any code repository.  If the variable is not
 defined, then the command will fail with an error.  If the value is invalid, then the command will attempt to create a
 release, but this will fail due to GitHub authentication.  See below for details about generating the token.
 
 ### Deploy
 
 Transfer the specified release to the specified environment and update the environment to make the specified release
-the "current" version used in the given environment.
+the "current" version used in the given environment.  Depending on the command line options, either a new release can
+be built (by delegating to the `build` task), or an existing release (as created by a previous invocation of the
+`build` task) can be used.  If no release is specified, then the default action is to determine the latest release by
+querying the GitHub API.
 
 Syntax for the `deploy` task:
 
-    rwahs deploy -e <env> -c <component> -r <release>
+    rwahs deploy [-e <environment>] -c <component> [-b | -r <release>]
 
 Following the deployment, any required initialisation tasks are performed.  Specifically, when the "providence"
 component is deployed, any pending database migrations are applied.  Additionally, caches are cleaned and services are
@@ -75,9 +79,9 @@ Remove all data from the database, restoring it to a clean state following a fre
 
 Syntax for the `nuke` task:
 
-    rwahs nuke -e <env>
+    rwahs nuke [-e <environment>]
 
-This task does not accept a `-c` parameter, because it implicitly relates to clearing the database in the given 
+This task does not accept a `-c` parameter, because it implicitly relates to clearing the database in the given
 environment.
 
 This task does not accept any additional parameters.
@@ -89,7 +93,7 @@ and inserting the data into the environment's database.
 
 Syntax for the `import` task:
 
-    rwahs import -e <env> [-n]
+    rwahs import [-e <environment>] [-n]
 
 This task does not accept a `-c` parameter, because it implicitly relates to running the import scripts.
 
@@ -99,12 +103,12 @@ If the `-n` parameter is specified, it is the equivalent of running the `nuke` t
 
 The use of standard and additional parameters is summarised in the following table:
 
-| Task     | `-e <environment>` | `-c <component>` | Additional parameters (mostly optional) |
-|----------|--------------------|------------------|-----------------------------------------|
-| `build`  |                    | Required         | `-t <target-commitish>` `-r <release>`  |
-| `deploy` | Optional`*`        | Required         | `-r <release>` (Required)               |
-| `nuke`   | Optional`*`        |                  |                                         |
-| `import` | Optional`*`        |                  | `-n`                                    |
+| Task     | `-e <environment>` | `-c <component>` | Additional parameters (optional)           |
+|----------|--------------------|------------------|--------------------------------------------|
+| `build`  |                    | Required         | `-t <target-commitish>` and `-r <release>` |
+| `deploy` | Optional`*`        | Required         | either `-b` or `-r <release>`              |
+| `nuke`   | Optional`*`        |                  |                                            |
+| `import` | Optional`*`        |                  | `-n`                                       |
 
 `*` If the `-e <environment>` parameter is missing, the task will operate locally.
 
@@ -152,7 +156,7 @@ The output of this command will include the token, for example:
 
 The `<token>` is the value you need to set to the `RWAHS_ACCESS_TOKEN` environment variable.
 
-Note that the "repo" scope is required.  To check your assigned scopes after `RWAHS_ACCESS_TOKEN` is set and available, 
+Note that the "repo" scope is required.  To check your assigned scopes after `RWAHS_ACCESS_TOKEN` is set and available,
 use the following command:
 
     curl -H "Authorization: token ${RWAHS_ACCESS_TOKEN}" https://api.github.com/users/<username> -I
@@ -172,7 +176,7 @@ locally.  Otherwise, the task is run remotely based on the environment's configu
 In order to prevent loops, the correct `RWAHS_ENV` variable **must** be configured globally for at least the user being
 used to run the remote commands.
 
-When running in an environment where `RWAHS_ENV` is set, specifying `-e` is optional unless the value is different 
+When running in an environment where `RWAHS_ENV` is set, specifying `-e` is optional unless the value is different
 (i.e. it is a remote call to a different environment).
 
 ### Using Identity Files
@@ -194,7 +198,7 @@ There are some steps that need to be completed to allow remote deployment to wor
 
 ### Allowing Service Restarts
 
-To allow a regular, non-privileged user to restart services, which occurs following a `deploy` of the `providence` or 
+To allow a regular, non-privileged user to restart services, which occurs following a `deploy` of the `providence` or
 `configuration` components, the `service` command needs to be able to be run as root.
 
 Add the following to the `/etc/sudoers` file:
@@ -222,7 +226,7 @@ To install the `tools` component in the first instance, perform the following st
 
 ### Setting `RWAHS_ENV`
 
-To prevent an infinite loop, the `RWAHS_ENV` environment variable must be set to the correct value on the remote 
+To prevent an infinite loop, the `RWAHS_ENV` environment variable must be set to the correct value on the remote
 machine, for at least the user doing the deployments.  For example, if running a task with `-e staging` then the
 `staging` environment configuration is used to connect to a given `user@host`, and run the same command that was used
 locally.  On the remote machine, `RWAHS_ENV` must be set to `staging` and then the script will know to run locally.
