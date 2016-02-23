@@ -19,7 +19,7 @@ function nuke_showHelp {
     echo "current profile (i.e. the profile most recently deployed to the given environment)."
     echo
     echo "USAGE:"
-    echo "    ${programName} nuke -e <environment>"
+    echo "    ${programName} nuke [-e <environment>]"
     echo
     echo "WHERE:"
     echo "    -e <environment> gives the name of the environment to nuke."

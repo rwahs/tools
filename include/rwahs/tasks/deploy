@@ -19,7 +19,7 @@ function deploy_showHelp {
     echo "release the 'current' version in the given environment."
     echo
     echo "USAGE:"
-    echo "    ${programName} deploy -e <environment> -c <component> -r <release>"
+    echo "    ${programName} deploy [-e <environment>] -c <component> -r <release>"
     echo
     echo "WHERE:"
     echo "    -c <component> gives the name of the component to process."
