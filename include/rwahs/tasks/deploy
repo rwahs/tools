@@ -19,19 +19,21 @@ function deploy_showHelp {
     echo "release the 'current' version in the given environment."
     echo
     echo "USAGE:"
-    echo "    ${programName} deploy [-e <environment>] -c <component> -r <release>"
+    echo "    ${programName} deploy [-e <environment>] -c <component> [-b | -r <release>]"
     echo
     echo "WHERE:"
     echo "    -c <component> gives the name of the component to process."
     echo "         Valid values: $(ls -m "${toolsDir}/config/${programName}/components")"
     echo "    -e <environment> gives the name of the environment to deploy into."
     echo "         Valid values: $(ls -m "${toolsDir}/config/${programName}/env")"
+    echo "    -b indicates that a new release should be built"
     echo "    -r <release> gives the release tag to deploy (required for \`deploy\` task)"
     echo
+    echo "If neither -b nor -r are given, then the latest release available will be used."
 }
 
 function deploy_runTask {
-    local programName toolsDir component environment releaseName targetPath targetSymlinkPath error
+    local programName toolsDir component environment buildRelease releaseName targetPath targetSymlinkPath error
     local repo repoDefaultTargetCommitish targetParent
     local host user targetRoot adminEmailAddress
 
@@ -44,13 +46,16 @@ function deploy_runTask {
     environment=${RWAHS_ENV-}
 
     # Parse parameters
-    while getopts :c:e:r: parameter; do
+    while getopts :c:e:br: parameter; do
         case "${parameter}" in
             c)
                 component="${OPTARG}"
             ;;
             e)
                 environment="${OPTARG}"
+            ;;
+            b)
+                buildRelease=true
             ;;
             r)
                 releaseName="${OPTARG}"
@@ -77,8 +82,6 @@ function deploy_runTask {
         error="Required parameter 'environment' not specified for 'deploy' task and no 'RWAHS_ENV' value is set."
     elif [ ! -f "${toolsDir}/config/${programName}/env/${environment}" ]; then
         error="Specified environment '${environment}' does not exist, see below for valid values."
-    elif [ ! -v releaseName ]; then
-        error="Required parameter 'release' not specified for 'deploy' task."
     elif [ ! $(command -v "curl") ]; then
         error="The 'curl' executable was not found and is required for the 'deploy' task; try 'apt-get install curl'."
     elif [ ! $(command -v "tar") ]; then
@@ -96,10 +99,23 @@ function deploy_runTask {
     source "${toolsDir}/config/${programName}/components/${component}"
     source "${toolsDir}/config/${programName}/env/${environment}"
 
+    # If a newly built release was requested, build it; don't set `releaseName` that will be picked up in the next step
+    if [ -v buildRelease ]; then
+        "${toolsDir}/bin/${programName}" build -c "${component}"
+    fi
+
+    # If we don't have a release name, then use the latest
+    if [ ! -v releaseName ]; then
+        releaseName="$(github_getLatestRelease ${RWAHS_ACCESS_TOKEN} ${repo})"
+    fi
+
+    # We now know what is being deployed, inform the user
+    echo "Deploying release '${releaseName}'"
+
     # Run preDeploy hook, if defined
     if [ "$(type -t preDeploy)" == "function" ]; then
         echo "Running pre-deploy hook..."
-        preDeploy "${programName}" "${toolsDir}"
+        preDeploy "${programName}" "${toolsDir}" "${targetRoot}"
     fi
 
     # Do the work
@@ -115,6 +131,6 @@ function deploy_runTask {
     # Run postDeploy hook, if defined
     if [ "$(type -t postDeploy)" == "function" ]; then
         echo "Running post-deploy hook..."
-        postDeploy "${programName}" "${toolsDir}"
+        postDeploy "${programName}" "${toolsDir}" "${targetRoot}"
     fi
 }
