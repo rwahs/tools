@@ -50,7 +50,7 @@ Note this task does not understand the `-e` option, because releases exist indep
 This task requires an environment variable to be set outside the script and configuration, e.g. in a shell startup file
 or similar, or as a prefix to the call to `rwahs`:
 
-     RWAHS_ACCESS_TOKEN='access_token' rwahs build ...
+    RWAHS_ACCESS_TOKEN='access_token' rwahs build ...
 
 This variable is defined externally so that it is not committed to any code repository.  If the variable is not
 defined, then the command will fail with an error.  If the value is invalid, then the command will attempt to create a
