@@ -115,7 +115,7 @@ function deploy_runTask {
     # Run preDeploy hook, if defined
     if [ "$(type -t preDeploy)" == "function" ]; then
         echo "Running pre-deploy hook..."
-        preDeploy "${programName}" "${toolsDir}" "${targetRoot}"
+        preDeploy "${targetRoot}" "${localSettingsRoot}"
     fi
 
     # Do the work
@@ -131,6 +131,6 @@ function deploy_runTask {
     # Run postDeploy hook, if defined
     if [ "$(type -t postDeploy)" == "function" ]; then
         echo "Running post-deploy hook..."
-        postDeploy "${programName}" "${toolsDir}" "${targetRoot}"
+        postDeploy "${targetRoot}" "${localSettingsRoot}"
     fi
 }
