@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+#
+# util/github - Function definitions for interacting with the GitHub REST API.
+#
+
+set -e
+set -u
+
+# Output the root URL of the GitHub API.
+function github_rootUrl {
+    echo "https://api.github.com"
+}
+
+# Output the user agent to use when querying the GitHub API.
+function github_userAgent {
+    echo "RWAHS Deployment Script"
+}
+
+# Output the header string to append to specify the version of GitHub API to use.
+function github_apiVersionHeader {
+    echo "Accept: application/vnd.github.v3+json"
+}
+
+# Output the header string to append to specify the authorization data.  Accepts the token itself as argument.
+function github_authorizationHeader {
+    if [ $# -lt 1 ]; then
+        echo "Insufficient parameters for github_authorizationHeader (token)" >&2
+        return 1
+    fi
+    echo "Authorization: token ${1}"
+}
+
+# Create a new release for the specified repo using the GitHub API.
+function github_createRelease {
+    local token repo releaseName targetCommitish comment template data
+
+    if [ $# -lt 4 ]; then
+        echo "Insufficient parameters for github_createRelease (token repo releaseName targetCommitish comment)" >&2
+        return 1
+    fi
+
+    token="${1}"
+    repo="${2}"
+    releaseName="${3}"
+    targetCommitish="${4}"
+
+    if [ $# -gte 5 ]; then
+        comment="${5}"
+    else
+        comment="Release ${releaseName}"
+    fi
+
+    template='{"tag_name":"release_%s","target_commitish":"%s","name":"%s","body":"%s","draft":false,"prerelease":false}'
+    data=$(printf "${template}" "${releaseName}" "${targetCommitish}" "${releaseName}" "${comment}")
+
+    curl -s \
+        --request POST \
+        --user-agent "$(github_userAgent)" \
+        --header "$(github_apiVersionHeader)" \
+        --header "$(github_authorizationHeader ${token})" \
+        --data "${data}" \
+        "$(github_rootUrl)/repos/${repo}/releases"
+}
+
+# Query the GitHub API and output the name of the latest release.
+function github_getLatestRelease {
+    local token repo
+
+    if [ $# -lt 2 ]; then
+        echo "Insufficient parameters for github_getLatestRelease (token repo)" >&2
+        return 1
+    fi
+
+    token="${1}"
+    repo="${2}"
+
+    curl -s \
+        --request GET \
+        --user-agent "$(github_userAgent)" \
+        --header "$(github_apiVersionHeader)" \
+        --header "$(github_authorizationHeader ${token})" \
+        "$(github_rootUrl)/repos/${repo}/releases/latest" \
+    | sed -re 's/^.*"name":"([^"]*)".*$/\1/'
+}
