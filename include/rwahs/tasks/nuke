@@ -30,7 +30,7 @@ function nuke_showHelp {
 function nuke_runTask {
     local programName toolsDir environment error
     local repo repoDefaultTargetCommitish targetParent
-    local host user targetRoot adminEmailAddress
+    local host user targetRoot localSettingsRoot adminEmailAddress
 
     # Function arguments
     programName="${1}"

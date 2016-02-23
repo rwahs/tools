@@ -32,7 +32,7 @@ function import_showHelp {
 function import_runTask {
     local programName toolsDir environment nukeFirst error
     local repo repoDefaultTargetCommitish targetParent
-    local host user targetRoot adminEmailAddress
+    local host user targetRoot localSettingsRoot adminEmailAddress
 
     # Function arguments
     programName="${1}"
