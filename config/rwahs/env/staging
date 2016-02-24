@@ -9,4 +9,5 @@ set -u
 host='52.62.226.104'
 user='ca'
 targetRoot='/data/deploy'
+localSettingsRoot='/data/local'
 adminEmailAddress='rwahs@gaiaresources.com.au'

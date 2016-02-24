@@ -19,7 +19,7 @@ function import_showHelp {
     echo "CollectiveAccess, and inserting the data into the environment's database."
     echo
     echo "USAGE:"
-    echo "    ${programName} build -e <environment> [-n]"
+    echo "    ${programName} build [-e <environment>] [-n]"
     echo
     echo "WHERE:"
     echo "    -e <environment> gives the name of the environment to import data into."
@@ -32,7 +32,7 @@ function import_showHelp {
 function import_runTask {
     local programName toolsDir environment nukeFirst error
     local repo repoDefaultTargetCommitish targetParent
-    local host user targetRoot adminEmailAddress
+    local host user targetRoot localSettingsRoot adminEmailAddress
 
     # Function arguments
     programName="${1}"
