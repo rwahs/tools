@@ -101,6 +101,6 @@ function build_runTask {
 
     # Do the work
     echo "Running 'build' task for component '${component}'..."
-    github_createRelease "${RWAHS_ACCESS_TOKEN}" "${repo}" "${releaseName}" "${targetCommitish}" "Release tagged at ${releaseDate}" >/dev/null 2>&1
+    github_createRelease "${RWAHS_ACCESS_TOKEN}" "${repo}" "${releaseName}" "${targetCommitish}" "Release tagged at ${releaseDate}" >/dev/null
     echo "Created release name: ${releaseName}"
 }
