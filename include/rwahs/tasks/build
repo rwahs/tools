@@ -86,8 +86,9 @@ function build_runTask {
         exit 1
     fi
 
-    # Import the component settings
+    # Import the component settings and GitHub API utility functions
     source "${toolsDir}/config/${programName}/components/${component}"
+    source "${toolsDir}/include/util/github"
 
     # Ensure we have a release name, default to the date/time stamp if none specified
     if [ ! -v releaseName ]; then

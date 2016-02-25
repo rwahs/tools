@@ -95,9 +95,10 @@ function deploy_runTask {
         exit 1
     fi
 
-    # Import the component settings and environment settings
+    # Import the component settings, environment settings and GitHub API utility functions
     source "${toolsDir}/config/${programName}/components/${component}"
     source "${toolsDir}/config/${programName}/env/${environment}"
+    source "${toolsDir}/include/util/github"
 
     # If a newly built release was requested, build it; don't set `releaseName` that will be picked up in the next step
     if [ -v buildRelease ]; then
