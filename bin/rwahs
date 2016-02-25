@@ -93,7 +93,7 @@ function getRemoteCommand {
         source "${toolsDir}/config/${programName}/components/tools"
 
         # Include the environment configuration for the SSH parameters.
-        source "${toolsDir}/config/${programName}/env/${environment}"
+        source "${toolsDir}/config/${programName}/env/${environment-${RWAHS_ENV}}"
 
         # Output the command to run; this is captured by the calling function.
         echo ssh "${user}@${host}" "${targetRoot}/${targetParent}/current/bin/${programName} ${task} $@"
