@@ -44,7 +44,7 @@ function github_createRelease {
     releaseName="${3}"
     targetCommitish="${4}"
 
-    if [ $# -gte 5 ]; then
+    if [ $# -ge 5 ]; then
         comment="${5}"
     else
         comment="Release ${releaseName}"
