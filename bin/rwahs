@@ -88,12 +88,12 @@ function getRemoteCommand {
     environment=$(getEnvironmentOption $@)
 
     # To run remotely, either `environment` and `RWAHS_ENV` are both
-    if [ "${environment-${RWAHS_ENV-}}" != "${RWAHS_ENV-}" ]; then
+    if [ "${environment:-${RWAHS_ENV:-}}" != "${RWAHS_ENV:-}" ]; then
         # Include the tools component configuration, so we know where to run the command from.
         source "${toolsDir}/config/${programName}/components/tools"
 
         # Include the environment configuration for the SSH parameters.
-        source "${toolsDir}/config/${programName}/env/${environment-${RWAHS_ENV-}}"
+        source "${toolsDir}/config/${programName}/env/${environment:-${RWAHS_ENV:-}}"
 
         # Output the command to run; this is captured by the calling function.
         echo ssh "${user}@${host}" "${targetRoot}/${targetParent}/current/bin/${programName} ${task} $@"

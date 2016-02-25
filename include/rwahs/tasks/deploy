@@ -43,7 +43,7 @@ function deploy_runTask {
     shift 2
 
     # Default values
-    environment=${RWAHS_ENV-}
+    environment=${RWAHS_ENV:-}
 
     # Parse parameters
     while getopts :c:e:br: parameter; do
