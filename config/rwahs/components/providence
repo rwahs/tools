@@ -30,7 +30,7 @@ function postDeploy {
     ln -s "${localSettingsRoot}/setup.php" "${targetRoot}/${targetParent}/current/setup.php"
     ln -s "${localSettingsRoot}/media/collectiveaccess" "${targetRoot}/${targetParent}/current/media/collectiveaccess"
 
-    "${COLLECTIVEACCESS_HOME}/support/bin/caUtils" update-database-schema
+    yes | "${COLLECTIVEACCESS_HOME}/support/bin/caUtils" update-database-schema
 
     sudo service apache2 start
     sudo service php5-fpm start
