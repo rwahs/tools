@@ -18,6 +18,7 @@ function preDeploy {
         echo "Error: The COLLECTIVEACCESS_HOME environment variable does not point to a valid providence installation" >&2
         exit 1
     fi
+
     sudo service apache2 stop
     sudo service php5-fpm stop
 }
@@ -27,7 +28,10 @@ function postDeploy {
     localSettingsRoot="${2}"
 
     ln -s "${localSettingsRoot}/setup.php" "${targetRoot}/${targetParent}/current/setup.php"
+    ln -s "${localSettingsRoot}/media/collectiveaccess" "${targetRoot}/${targetParent}/current/media/collectiveaccess"
+
     "${COLLECTIVEACCESS_HOME}/support/bin/caUtils" update-database-schema
+
     sudo service apache2 start
     sudo service php5-fpm start
 }
