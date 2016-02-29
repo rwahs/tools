@@ -6,7 +6,7 @@
 set -e
 set -u
 
-host='52.63.20.116'
+host='uat-collections.histwest.org.au'
 user='ca'
 targetRoot='/data/deploy'
 localSettingsRoot='/data/local'
