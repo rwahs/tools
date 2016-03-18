@@ -10,7 +10,6 @@ repo='rwahs/import-scripts'
 repoDefaultTargetCommitish='master'
 targetParent='import-scripts'
 
-
 function postDeploy {
     targetRoot="${1}"
     localSettingsRoot="${2}"
