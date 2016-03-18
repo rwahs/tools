@@ -9,3 +9,10 @@ set -u
 repo='rwahs/import-scripts'
 repoDefaultTargetCommitish='master'
 targetParent='import-scripts'
+
+function postDeploy {
+    targetRoot="${1}"
+    localSettingsRoot="${2}"
+
+    ln -s "${localSettingsRoot}/source" "${targetRoot}/${targetParent}/current/importScripts/source"
+}
