@@ -15,4 +15,5 @@ function postDeploy {
     localSettingsRoot="${2}"
 
     ln -s "${localSettingsRoot}/source" "${targetRoot}/${targetParent}/current/importScripts/source"
+    cp "${localSettingsRoot}/import/conf/"* "${targetRoot}/${targetParent}/current/importScripts/conf/"
 }
