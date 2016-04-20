@@ -35,7 +35,7 @@ function deploy_showHelp {
 function deploy_runTask {
     local programName toolsDir component environment buildRelease releaseName targetPath targetSymlinkPath error
     local repo repoDefaultTargetCommitish targetParent
-    local host user targetRoot localSettingsRoot adminEmailAddress
+    local host user targetRoot localSettingsRoot localStorageRoot adminEmailAddress
 
     # Function arguments
     programName="${1}"
@@ -116,7 +116,7 @@ function deploy_runTask {
     # Run preDeploy hook, if defined
     if [ "$(type -t preDeploy)" == "function" ]; then
         echo "Running pre-deploy hook..."
-        preDeploy "${targetRoot}" "${localSettingsRoot}"
+        preDeploy "${targetRoot}" "${localSettingsRoot}" "${localStorageRoot}"
     fi
 
     # Do the work
@@ -136,6 +136,6 @@ function deploy_runTask {
     # Run postDeploy hook, if defined
     if [ "$(type -t postDeploy)" == "function" ]; then
         echo "Running post-deploy hook..."
-        postDeploy "${targetRoot}" "${localSettingsRoot}"
+        postDeploy "${targetRoot}" "${localSettingsRoot}" "${localStorageRoot}"
     fi
 }
