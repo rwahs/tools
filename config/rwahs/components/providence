@@ -27,11 +27,12 @@ function postDeploy {
     targetRoot="${1}"
     localSettingsRoot="${2}"
     localStorageRoot="${3}"
+    deployDir="${targetRoot}/${targetParent}"
 
-    ln -s "${localSettingsRoot}/setup.php" "${targetRoot}/${targetParent}/current/setup.php"
-    ln -s "${localStorageRoot}/media/collectiveaccess" "${targetRoot}/${targetParent}/current/media/collectiveaccess"
-    rm -rf "${targetRoot}/import"
-    ln -s "${localStorageRoot}/import" "${targetRoot}/${targetParent}/current/import"
+    ln -s "${localSettingsRoot}/setup.php" "${deployDir}/current/setup.php"
+    ln -s "${localStorageRoot}/media/collectiveaccess" "${deployDir}/current/media/collectiveaccess"
+    rm -rf "${deployDir}/import"
+    ln -s "${localStorageRoot}/import" "${deployDir}/current/import"
 
     yes | "${COLLECTIVEACCESS_HOME}/support/bin/caUtils" update-database-schema
 
