@@ -11,6 +11,7 @@ repoDefaultTargetCommitish='master-fix'
 targetParent='providence'
 
 function preDeploy {
+    fpmService="${4}"
     if [ ! -v COLLECTIVEACCESS_HOME ]; then
         echo "Error: The COLLECTIVEACCESS_HOME environment variable is required to deploy the 'providence' component" >&2
         exit 1
@@ -20,13 +21,14 @@ function preDeploy {
     fi
 
     sudo service apache2 stop
-    sudo service php5-fpm stop
+    sudo service ${fpmService} stop
 }
 
 function postDeploy {
     targetRoot="${1}"
     localSettingsRoot="${2}"
     localStorageRoot="${3}"
+    fpmService="${4}"
     deployDir="${targetRoot}/${targetParent}"
 
     ln -s "${localSettingsRoot}/setup.php" "${deployDir}/current/setup.php"
@@ -37,5 +39,5 @@ function postDeploy {
     yes | "${COLLECTIVEACCESS_HOME}/support/bin/caUtils" update-database-schema
 
     sudo service apache2 start
-    sudo service php5-fpm start
+    sudo service ${fpmService} start
 }

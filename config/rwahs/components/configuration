@@ -11,11 +11,13 @@ repoDefaultTargetCommitish='master'
 targetParent='providence-configuration'
 
 function preDeploy {
+    fpmService="${4}"
     sudo service apache2 stop
-    sudo service php5-fpm stop
+    sudo service "${fpmService}" stop
 }
 
 function postDeploy {
+    fpmService="${4}"
     sudo service apache2 start
-    sudo service php5-fpm start
+    sudo service ${fpmService} start
 }
